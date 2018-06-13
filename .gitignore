@@ -8,4 +8,4 @@
 /.cpcache
 /node_modules
 /test.clj
-
+*.iml
