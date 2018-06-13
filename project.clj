@@ -15,9 +15,10 @@
                  [cljfmt "0.5.7"]
                  [medley "1.0.0"]]
   :jvm-opts ^:replace ["-Xmx1g" "-server"]
-  :main clojure-lsp.main
-  :profiles {:dev {:plugins [[com.jakemccrary/lein-test-refresh "0.22.0"]
-                             [lein-bin "0.3.4"]]
-                   :bin {:name "clojure-lsp"}}
-             :test {:test-selectors {:focused :focused}}
+  :main lightcode.server.main
+  :profiles {:dev     {:plugins [[com.jakemccrary/lein-test-refresh "0.22.0"]
+                                 [lein-bin "0.3.4"]
+                                 [lein-repl-run "0.1.0"]]
+                       :bin     {:name "lightcode"}}
+             :test    {:test-selectors {:focused :focused}}
              :uberjar {:aot :all}})
