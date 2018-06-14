@@ -226,12 +226,8 @@
                           (.setReferencesProvider true)
                           (.setRenameProvider true)
                           (.setDefinitionProvider true)
-
-                          ;; No formatting provider for now
-                          ;; I will use the cljfmt extension
-                          ; (.setDocumentFormattingProvider true)
-                          ; (.setDocumentRangeFormattingProvider true)
-
+                          (.setDocumentFormattingProvider true)
+                          (.setDocumentRangeFormattingProvider true)
                           (.setTextDocumentSync (doto (TextDocumentSyncOptions.)
                                                   (.setOpenClose true)
                                                   (.setChange TextDocumentSyncKind/Full)

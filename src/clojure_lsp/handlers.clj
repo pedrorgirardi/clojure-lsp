@@ -354,7 +354,7 @@
 
 (defn formatting [doc-id]
   (let [{:keys [text]} (get-in @db/db [:documents doc-id])
-        new-text (cljfmt/reformat-string text)]
+        new-text (cljfmt/reformat-string text {:remove-consecutive-blank-lines? false})]
     (when-not (= new-text text)
       [{:range (->range {:row 1 :col 1 :end-row 1000000 :end-col 1000000})
         :new-text new-text}])))
@@ -365,5 +365,5 @@
         forms (parser/find-top-forms-in-range text format-pos)]
     (mapv (fn [form-loc]
             {:range (->range (-> form-loc z/node meta))
-             :new-text (n/string (cljfmt/reformat-form (z/node form-loc)))})
+             :new-text (n/string (cljfmt/reformat-form (z/node form-loc) {:remove-consecutive-blank-lines? false}))})
           forms)))
