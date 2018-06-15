@@ -1,4 +1,7 @@
 (defproject clojure-lsp "0.1.0-SNAPSHOT"
+
+  :java-source-paths ["src"]
+
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [org.clojure/tools.reader "1.2.1"]
                  [org.eclipse.lsp4j/org.eclipse.lsp4j "0.4.0" :exclusions [org.eclipse.xtend/org.eclipse.xtend.lib]]

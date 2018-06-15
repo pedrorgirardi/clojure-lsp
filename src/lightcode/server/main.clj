@@ -8,8 +8,8 @@
    [clojure.string :as string]
    [clojure.core.async :as async])
   (:import
+   (lightcode.server LightCodeExtension)
    (org.eclipse.lsp4j.services LanguageServer TextDocumentService WorkspaceService LanguageClient)
-   (org.eclipse.lsp4j.jsonrpc.services JsonRequest)
    (org.eclipse.lsp4j
     ApplyWorkspaceEditParams
     CodeActionParams
@@ -59,10 +59,10 @@
 
   (^void didChange [this ^DidChangeTextDocumentParams params]
     (let [textDocument (.getTextDocument params)
-          version (.getVersion textDocument)
-          changes (.getContentChanges params)
-          text (.getText ^TextDocumentContentChangeEvent (.get changes 0))
-          uri (.getUri textDocument)]
+          version      (.getVersion textDocument)
+          changes      (.getContentChanges params)
+          text         (.getText ^TextDocumentContentChangeEvent (.get changes 0))
+          uri          (.getUri textDocument)]
       (#'handlers/did-change uri text version)))
 
   (^void didSave [this ^DidSaveTextDocumentParams params]
@@ -78,8 +78,8 @@
        (get [this]
          (try
            (let [doc-id (.getUri (.getTextDocument params))
-                 pos (.getPosition params)
-                 line (inc (.getLine pos))
+                 pos    (.getPosition params)
+                 line   (inc (.getLine pos))
                  column (inc (.getCharacter pos))]
              (interop/conform-or-log ::interop/references (#'handlers/references doc-id line column)))
            (catch Exception e
@@ -91,8 +91,8 @@
        (get [this]
          (try
            (let [doc-id (.getUri (.getTextDocument params))
-                 pos (.getPosition params)
-                 line (inc (.getLine pos))
+                 pos    (.getPosition params)
+                 line   (inc (.getLine pos))
                  column (inc (.getCharacter pos))]
              (interop/conform-or-log ::interop/completion-items (#'handlers/completion doc-id line column)))
            (catch Exception e
@@ -104,10 +104,10 @@
      (reify Supplier
        (get [this]
          (try
-           (let [doc-id (.getUri (.getTextDocument params))
-                 pos (.getPosition params)
-                 line (inc (.getLine pos))
-                 column (inc (.getCharacter pos))
+           (let [doc-id   (.getUri (.getTextDocument params))
+                 pos      (.getPosition params)
+                 line     (inc (.getLine pos))
+                 column   (inc (.getCharacter pos))
                  new-name (.getNewName params)]
              (interop/conform-or-log ::interop/workspace-edit (#'handlers/rename doc-id line column new-name)))
            (catch Exception e
@@ -119,8 +119,8 @@
        (get [this]
          (try
            (let [doc-id (.getUri (.getTextDocument params))
-                 pos (.getPosition params)
-                 line (inc (.getLine pos))
+                 pos    (.getPosition params)
+                 line   (inc (.getLine pos))
                  column (inc (.getCharacter pos))]
              (interop/conform-or-log ::interop/hover (#'handlers/hover doc-id line column)))
            (catch Exception e
@@ -147,13 +147,13 @@
     (let [result (when (compare-and-set! formatting false true)
                    (try
                      (let [doc-id (.getUri (.getTextDocument params))
-                           range (.getRange params)
-                           start (.getStart range)
-                           end (.getEnd range)]
+                           range  (.getRange params)
+                           start  (.getStart range)
+                           end    (.getEnd range)]
                        (interop/conform-or-log ::interop/edits (#'handlers/range-formatting
                                                                 doc-id
-                                                                {:row (inc (.getLine start))
-                                                                 :col (inc (.getCharacter start))
+                                                                {:row     (inc (.getLine start))
+                                                                 :col     (inc (.getCharacter start))
                                                                  :end-row (inc (.getLine end))
                                                                  :end-col (inc (.getCharacter end))})))
                      (catch Exception e
@@ -176,8 +176,8 @@
        (get [this]
          (try
            (let [doc-id (.getUri (.getTextDocument params))
-                 pos (.getPosition params)
-                 line (inc (.getLine pos))
+                 pos    (.getPosition params)
+                 line   (inc (.getLine pos))
                  column (inc (.getCharacter pos))]
              (interop/conform-or-log ::interop/location (#'handlers/definition doc-id line column)))
            (catch Exception e
@@ -194,28 +194,22 @@
     (log/warn params)
     (let [[doc-id line col & args] (map interop/json->clj (.getArguments params))]
       (future
-        (try
-          (let [result (#'handlers/refactor (path->uri doc-id)
-                                            (inc (int line))
-                                            (inc (int col))
-                                            (.getCommand params)
-                                            args)]
-            (.get (.applyEdit (:client @db/db)
-                              (ApplyWorkspaceEditParams.
-                               (interop/conform-or-log ::interop/workspace-edit result)))))
-          (catch Exception e
-            (log/error e)))))
+       (try
+         (let [result (#'handlers/refactor (path->uri doc-id)
+                       (inc (int line))
+                       (inc (int col))
+                       (.getCommand params)
+                       args)]
+           (.get (.applyEdit (:client @db/db)
+                             (ApplyWorkspaceEditParams.
+                              (interop/conform-or-log ::interop/workspace-edit result)))))
+         (catch Exception e
+           (log/error e)))))
     (CompletableFuture/completedFuture 0))
   (^void didChangeConfiguration [this ^DidChangeConfigurationParams params]
     (log/warn params))
   (^void didChangeWatchedFiles [this ^DidChangeWatchedFilesParams params]
     (log/warn "DidChangeWatchedFilesParams")))
-
-
-(defprotocol REPL
-  (^{org.eclipse.lsp4j.jsonrpc.services.JsonRequest "sendMessage"
-     :tag CompletableFuture}
-    sendMessage [this message]))
 
 
 (defrecord LSPServer []
@@ -245,7 +239,7 @@
     (log/warn "Initialized" params))
   (^CompletableFuture shutdown [this]
     (log/info "Shutting down")
-    (reset! db/db {:documents {}}) ;; TODO confirm this is correct
+    (reset! db/db {:documents {}})                          ;; TODO confirm this is correct
     (CompletableFuture/completedFuture
      {:result nil}))
   (exit [this]
@@ -257,15 +251,18 @@
   (getWorkspaceService [this]
     (LSPWorkspaceService.))
 
-  REPL
-  (sendMessage [this message]
-    (CompletableFuture/completedFuture nil)))
+  LightCodeExtension
+  (repl [_ message]
+    (log/info (str "[REPL] Message type " (type message)) )
+    (log/info "[REPL] Message" message)
+
+    (CompletableFuture/completedFuture "repl")))
 
 
 (defn -main [& args]
   (log/info "Light Code server started")
-  (let [server      (LSPServer.)
-        launcher    (LSPLauncher/createServerLauncher server System/in System/out)]
+  (let [server   (LSPServer.)
+        launcher (LSPLauncher/createServerLauncher server System/in System/out)]
 
     ; repl-server (nrepl.server/start-server)
     ; (log/info "nREPL server started on port" (:port repl-server))
