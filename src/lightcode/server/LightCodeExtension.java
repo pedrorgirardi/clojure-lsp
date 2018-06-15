@@ -6,5 +6,5 @@ import java.util.concurrent.CompletableFuture;
 
 public interface LightCodeExtension {
     @JsonRequest
-    CompletableFuture<String> repl(Object message);
+    CompletableFuture<String> repl(String message);
 }
