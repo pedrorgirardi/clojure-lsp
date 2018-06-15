@@ -9,6 +9,7 @@
    [clojure.core.async :as async])
   (:import
    (org.eclipse.lsp4j.services LanguageServer TextDocumentService WorkspaceService LanguageClient)
+   (org.eclipse.lsp4j.jsonrpc.services JsonRequest)
    (org.eclipse.lsp4j
     ApplyWorkspaceEditParams
     CodeActionParams
@@ -248,6 +249,25 @@
     (LSPTextDocumentService.))
   (getWorkspaceService [this]
     (LSPWorkspaceService.)))
+
+
+
+; (replEval [this params]
+;     ((log/warn "replEval")
+;      (CompletableFuture/completedFuture nil)))
+
+
+(defprotocol LSPServerNREPL
+  (message! [message]))
+
+
+(extend-type LSPServer
+  LSPServerNREPL
+
+  (^{org.eclipse.lsp4j.jsonrpc.services.JsonRequest "message!"
+     :tag CompletableFuture}
+    message! [message]
+    nil))
 
 
 (defn -main [& args]
