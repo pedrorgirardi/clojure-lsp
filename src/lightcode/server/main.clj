@@ -211,6 +211,11 @@
   (^void didChangeWatchedFiles [this ^DidChangeWatchedFilesParams params]
     (log/warn "DidChangeWatchedFilesParams")))
 
+
+(defprotocol REPL
+  (^CompletableFuture sendMessage [this message]))
+
+
 (defrecord LSPServer []
   LanguageServer
   (^CompletableFuture initialize [this ^InitializeParams params]
@@ -248,7 +253,11 @@
   (getTextDocumentService [this]
     (LSPTextDocumentService.))
   (getWorkspaceService [this]
-    (LSPWorkspaceService.)))
+    (LSPWorkspaceService.))
+
+  REPL
+  (sendMessage [this message]
+    (CompletableFuture/completedFuture nil)))
 
 
 
@@ -257,17 +266,17 @@
 ;      (CompletableFuture/completedFuture nil)))
 
 
-(defprotocol LSPServerNREPL
-  (message! [message]))
+; (defprotocol LSPServerNREPL
+;   (message! [message]))
 
 
-(extend-type LSPServer
-  LSPServerNREPL
+; (extend-type LSPServer
+;   LSPServerNREPL
 
-  (^{org.eclipse.lsp4j.jsonrpc.services.JsonRequest "message!"
-     :tag CompletableFuture}
-    message! [message]
-    nil))
+;   (^{org.eclipse.lsp4j.jsonrpc.services.JsonRequest "message!"
+;      :tag CompletableFuture}
+;     message! [message]
+;     nil))
 
 
 (defn -main [& args]
