@@ -3,6 +3,10 @@
    [clojure-lsp.db :as db]
    [clojure-lsp.handlers :as handlers]
    [clojure-lsp.interop :as interop]
+
+   [lightcode.server.repl :as repl]
+
+   [clojure.edn :as edn]
    [clojure.tools.logging :as log]
    [clojure.tools.nrepl.server :as nrepl.server]
    [clojure.string :as string]
@@ -253,10 +257,10 @@
 
   LightCodeExtension
   (repl [_ message]
-    (log/info (str "[REPL] Message type " (type message)) )
-    (log/info "[REPL] Message" message)
+    (log/info "[REPL]" message)
 
-    (CompletableFuture/completedFuture "repl")))
+    (let [message (edn/read-string message)]
+      (CompletableFuture/completedFuture (pr-str (repl/repl message))))))
 
 
 (defn -main [& args]
