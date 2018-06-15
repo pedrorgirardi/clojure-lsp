@@ -262,25 +262,6 @@
     (CompletableFuture/completedFuture nil)))
 
 
-
-; (replEval [this params]
-;     ((log/warn "replEval")
-;      (CompletableFuture/completedFuture nil)))
-
-
-; (defprotocol LSPServerNREPL
-;   (message! [message]))
-
-
-; (extend-type LSPServer
-;   LSPServerNREPL
-
-;   (^{org.eclipse.lsp4j.jsonrpc.services.JsonRequest "message!"
-;      :tag CompletableFuture}
-;     message! [message]
-;     nil))
-
-
 (defn -main [& args]
   (log/info "Light Code server started")
   (let [server      (LSPServer.)
