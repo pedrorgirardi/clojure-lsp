@@ -213,7 +213,9 @@
 
 
 (defprotocol REPL
-  (^CompletableFuture sendMessage [this message]))
+  (^{org.eclipse.lsp4j.jsonrpc.services.JsonRequest "sendMessage"
+     :tag CompletableFuture}
+    sendMessage [this message]))
 
 
 (defrecord LSPServer []
