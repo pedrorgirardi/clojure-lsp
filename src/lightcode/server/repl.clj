@@ -146,11 +146,3 @@
         :ret any?)
 
 
-(comment
-  {:op      "info"
-   :session ""
-   :context {:env                  "clj"
-             :nrepl                {:port 1 :host "localhost"}
-             :cljs-repl            "shadow-cljs"
-             :start-cljs-repl-code ""}})
-
