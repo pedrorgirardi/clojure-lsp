@@ -2,7 +2,8 @@
   (:require
    [clojure.tools.nrepl :as nrepl]
    [clojure.spec.alpha :as s]
-   [clojure.string :as str]))
+   [clojure.string :as str])
+  (:refer-clojure :exclude [eval]))
 
 
 (s/def ::op
@@ -132,24 +133,24 @@
           (f client session))))))
 
 
-(s/fdef repl
+(defn eval [{:keys [context] :as message}]
+  (with-session! context
+    (fn [client session]
+      (-> client
+          (nrepl/message (assoc message :session session))
+          (nrepl/combine-responses)
+          doall))))
+
+(s/fdef eval
         :args (s/cat :message ::message)
         :ret any?)
 
-(defn repl [{:keys [context] :as message}]
-  (with-session! context
-                 (fn [client session]
-                   (-> client
-                       (nrepl/message (assoc message :session session))
-                       (nrepl/combine-responses)
-                       doall))))
-
 
 (comment
- {:op      "info"
-  :session ""
-  :context {:env                  "clj"
-            :nrepl                {:port 1 :host "localhost"}
-            :cljs-repl            "shadow-cljs"
-            :start-cljs-repl-code ""}})
+  {:op      "info"
+   :session ""
+   :context {:env                  "clj"
+             :nrepl                {:port 1 :host "localhost"}
+             :cljs-repl            "shadow-cljs"
+             :start-cljs-repl-code ""}})
 

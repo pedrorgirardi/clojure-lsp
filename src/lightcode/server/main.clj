@@ -198,17 +198,17 @@
     (log/warn params)
     (let [[doc-id line col & args] (map interop/json->clj (.getArguments params))]
       (future
-       (try
-         (let [result (#'handlers/refactor (path->uri doc-id)
-                       (inc (int line))
-                       (inc (int col))
-                       (.getCommand params)
-                       args)]
-           (.get (.applyEdit (:client @db/db)
-                             (ApplyWorkspaceEditParams.
-                              (interop/conform-or-log ::interop/workspace-edit result)))))
-         (catch Exception e
-           (log/error e)))))
+        (try
+          (let [result (#'handlers/refactor (path->uri doc-id)
+                                            (inc (int line))
+                                            (inc (int col))
+                                            (.getCommand params)
+                                            args)]
+            (.get (.applyEdit (:client @db/db)
+                              (ApplyWorkspaceEditParams.
+                               (interop/conform-or-log ::interop/workspace-edit result)))))
+          (catch Exception e
+            (log/error e)))))
     (CompletableFuture/completedFuture 0))
   (^void didChangeConfiguration [this ^DidChangeConfigurationParams params]
     (log/warn params))
@@ -256,11 +256,11 @@
     (LSPWorkspaceService.))
 
   LightCodeExtension
-  (repl [_ message]
-    (log/info "[REPL]" message)
+  (eval [_ message]
+    (log/info "[EVAL]" message)
 
     (let [message (edn/read-string message)]
-      (CompletableFuture/completedFuture (pr-str (repl/repl message))))))
+      (CompletableFuture/completedFuture (pr-str (repl/eval message))))))
 
 
 (defn -main [& args]
