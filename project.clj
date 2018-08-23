@@ -15,7 +15,7 @@
                  [org.xerial/sqlite-jdbc "3.21.0.1"]
                  [funcool/clojure.jdbc "0.9.0"]
                  [digest "1.4.8"]
-                 [cljfmt "0.5.7"]
+                 [cljfmt "0.6.0"]
                  [medley "1.0.0"]]
   :jvm-opts ^:replace ["-Xmx1g" "-server"]
   :main lightcode.server.main
