@@ -17,11 +17,14 @@
                  [digest "1.4.8"]
                  [cljfmt "0.6.0"]
                  [medley "1.0.0"]]
+
   :jvm-opts ^:replace ["-Xmx1g" "-server"]
+
   :main lightcode.server.main
+
   :profiles {:dev     {:plugins [[com.jakemccrary/lein-test-refresh "0.22.0"]
                                  [lein-bin "0.3.4"]
                                  [lein-repl-run "0.1.0"]]
-                       :bin     {:name "lightcode"}}
+                       :bin {:name "lightcode"}}
              :test    {:test-selectors {:focused :focused}}
              :uberjar {:aot :all}})
