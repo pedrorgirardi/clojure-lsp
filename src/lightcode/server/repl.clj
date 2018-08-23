@@ -121,7 +121,6 @@
         new-session)))
 
 
-
 (defn with-session! [context f]
   (let [env      (get context :env)
         port     (get-in context [:nrepl :port])
